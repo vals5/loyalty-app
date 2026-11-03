@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() { return request.auth != null; }
+
+    // Dueño/empleado = cuenta con email, no anónima
+    function isStaff() {
+      return isSignedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    function ownsBusiness(slug) {
+      return isStaff() &&
+        get(/databases/$(database)/documents/businesses/$(slug)).data.ownerUid == request.auth.uid;
+    }
+
+    match /businesses/{slug} {
+      allow read: if true; // la tarjeta pública necesita nombre, color y premio
+      allow create: if isStaff()
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.slug == slug;
+      allow update: if isStaff()
+        && resource.data.ownerUid == request.auth.uid
+        && request.resource.data.ownerUid == resource.data.ownerUid
+        && request.resource.data.slug == slug;
+      allow delete: if false;
+
+      match /cards/{cardId} {
+        allow read: if ownsBusiness(slug) || (isSignedIn() && request.auth.uid == cardId);
+        allow create: if isSignedIn()
+          && request.auth.uid == cardId
+          && exists(/databases/$(database)/documents/businesses/$(slug))
+          && request.resource.data.customerUid == cardId
+          && request.resource.data.stamps == 0
+          && request.resource.data.totalStamps == 0
+          && request.resource.data.redeemedCount == 0;
+        allow update: if ownsBusiness(slug)
+          && request.resource.data.customerUid == resource.data.customerUid;
+        allow delete: if false;
+      }
+
+      match /history/{entryId} {
+        allow read: if ownsBusiness(slug)
+          || (isSignedIn() && resource.data.cardId == request.auth.uid);
+        allow create: if ownsBusiness(slug)
+          && request.resource.data.createdBy == request.auth.uid;
+        allow update, delete: if false; // el historial es inmutable
+      }
+    }
+  }
+}
