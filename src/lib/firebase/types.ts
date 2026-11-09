@@ -1,5 +1,11 @@
 import type { Timestamp } from "firebase/firestore";
 
+/** Recompensa que se desbloquea al llegar al sello `at` (1 = primer sello). */
+export interface RewardLevel {
+  at: number;
+  name: string;
+}
+
 export interface Business {
   slug: string; // igual al ID del documento
   name: string;
@@ -7,7 +13,14 @@ export interface Business {
   primaryColor: string; // "#E11D48"
   logoUrl: string | null;
   stampsRequired: number; // sellos para obtener el premio
-  reward: string; // "Café gratis"
+  reward: string; // recompensa final (último sello)
+  extraRewards?: RewardLevel[]; // recompensas intermedias (sello < stampsRequired); puede faltar en comercios viejos
+  // Info del local (puede faltar en comercios creados antes: leer con ?? null)
+  description: string | null;
+  address: string | null;
+  hours: string | null;
+  phone: string | null;
+  stampIcon: string | null; // clave de lib/stamp-types.ts (null = genérico)
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
