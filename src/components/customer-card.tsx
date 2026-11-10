@@ -60,6 +60,11 @@ export function CustomerCard({ slug }: { slug: string }) {
     });
   }, []);
 
+  // Cuenta personal: el nombre ya viene cargado al crear la tarjeta
+  useEffect(() => {
+    if (user?.displayName) setName((n) => n || user.displayName || "");
+  }, [user]);
+
   // 2) Datos públicos del comercio
   useEffect(() => {
     let cancelled = false;

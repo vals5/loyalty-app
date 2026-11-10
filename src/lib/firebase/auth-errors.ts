@@ -2,6 +2,7 @@ import { FirebaseError } from "firebase/app";
 
 const MESSAGES: Record<string, string> = {
   "auth/email-already-in-use": "Ya existe una cuenta con ese email.",
+  "auth/credential-already-in-use": "Ya existe una cuenta con ese email.",
   "auth/invalid-email": "El email no es válido.",
   "auth/missing-email": "Ingresá tu email.",
   "auth/weak-password": "La contraseña es muy débil (mínimo 8 caracteres).",
