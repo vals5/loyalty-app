@@ -1,6 +1,12 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
-import { getFirestore, type Firestore } from "firebase/firestore";
+import {
+  getFirestore,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  type Firestore,
+} from "firebase/firestore";
 
 // Next reemplaza NEXT_PUBLIC_* de forma estática: hay que escribirlas literales.
 const firebaseConfig = {
@@ -19,4 +25,20 @@ if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
 // Singleton: reutiliza la app existente (HMR y múltiples imports).
 export const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const auth: Auth = getAuth(app);
-export const db: Firestore = getFirestore(app);
+function createDb(): Firestore {
+  try {
+    return initializeFirestore(app, {
+      // Si el streaming (WebChannel) está bloqueado o es muy lento —típico en redes móviles—
+      // pasa solo a long-polling en vez de quedarse esperando.
+      experimentalAutoDetectLongPolling: true,
+      // Caché en el dispositivo (IndexedDB): lo ya visto se muestra al instante. Solo en el navegador.
+      ...(typeof window !== "undefined"
+        ? { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) }
+        : {}),
+    });
+  } catch {
+    // Ya estaba inicializado (recarga en caliente): se reutiliza
+    return getFirestore(app);
+  }
+}
+export const db: Firestore = createDb();

@@ -7,7 +7,7 @@ import {
   signInAnonymously,
   type User,
 } from "firebase/auth";
-import { doc, getDoc, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
 import { QRCodeSVG } from "qrcode.react";
 import { ArrowLeft, Check, Clock, Gift, Loader2, Lock, MapPin, Navigation, Phone, QrCode, Share2 } from "lucide-react";
 import { WalletCard } from "@/components/card/wallet-card";
@@ -15,6 +15,7 @@ import { Panel, inputCls } from "@/components/shared/panel";
 import { auth, db } from "@/lib/firebase/client";
 import { buildQrPayload, businessDoc, cardDoc } from "@/lib/firebase/collections";
 import { saveSlug } from "@/lib/my-cards";
+import { syncCardIndex } from "@/lib/firebase/user-cards";
 import { stampType } from "@/lib/stamp-types";
 import { rewardLevels } from "@/lib/rewards";
 import type { Business, Card } from "@/lib/firebase/types";
@@ -65,35 +66,32 @@ export function CustomerCard({ slug }: { slug: string }) {
     if (user?.displayName) setName((n) => n || user.displayName || "");
   }, [user]);
 
-  // 2) Datos públicos del comercio
+  // 2) Datos públicos del comercio. onSnapshot: primero la caché del dispositivo, luego el servidor.
   useEffect(() => {
-    let cancelled = false;
-    getDoc(businessDoc(slug))
-      .then((snap) => {
-        if (!cancelled) setBusiness(snap.exists() ? snap.data() : null);
-      })
-      .catch(() => {
-        if (!cancelled) setError("No se pudo cargar el comercio.");
-      });
-    return () => {
-      cancelled = true;
-    };
+    return onSnapshot(
+      businessDoc(slug),
+      (snap) => setBusiness(snap.exists() ? snap.data() : null),
+      () => setError("No se pudo cargar el comercio.")
+    );
   }, [slug]);
 
-  // 3) Tarjeta del cliente en tiempo real (se actualiza sola al escanear)
+  // 3) Tarjeta del cliente en tiempo real (se actualiza sola al escanear).
+  //    Solo necesita la sesión: arranca en paralelo con la carga del comercio, sin esperarlo.
   useEffect(() => {
-    if (!user || !business) return undefined;
+    if (!user) return undefined;
     return onSnapshot(
       cardDoc(slug, user.uid),
       (snap) => setCard(snap.exists() ? snap.data() : null),
       () => setError("No se pudo cargar tu tarjeta.")
     );
-  }, [slug, user, business]);
+  }, [slug, user]);
 
-  // 4) Si ya tiene tarjeta, queda guardada en "Mis tarjetas" de este dispositivo
+  // 4) Si ya tiene tarjeta, queda en "Mis tarjetas": en este dispositivo y en la cuenta (otros dispositivos)
   useEffect(() => {
-    if (card) saveSlug(slug);
-  }, [card, slug]);
+    if (!card || !user) return;
+    saveSlug(slug);
+    syncCardIndex(user.uid, slug);
+  }, [card, user, slug]);
 
   async function createCard(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -126,11 +124,23 @@ export function CustomerCard({ slug }: { slug: string }) {
       </>
     );
   }
-  if (business === undefined || !user || card === undefined) {
+  if (business === undefined) {
     return (
       <>
         <TopBar />
         <div className="flex justify-center py-16">
+          {error ? <p role="alert" className="text-sm text-error">{error}</p> : <Loader2 className="size-6 animate-spin text-texto-sec" />}
+        </div>
+      </>
+    );
+  }
+  // El comercio ya cargó pero la sesión o la tarjeta todavía no: se muestra el pase y un indicador debajo
+  if (!user || card === undefined) {
+    return (
+      <>
+        <TopBar slug={slug} />
+        <WalletCard name={business.name} color={business.primaryColor} reward={business.reward} required={business.stampsRequired} filled={0} typeKey={business.stampIcon} rewardAt={rewardLevels(business).map((l) => l.at)} />
+        <div className="flex justify-center py-8">
           {error ? <p role="alert" className="text-sm text-error">{error}</p> : <Loader2 className="size-6 animate-spin text-texto-sec" />}
         </div>
       </>

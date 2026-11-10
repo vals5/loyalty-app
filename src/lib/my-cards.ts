@@ -1,4 +1,4 @@
-// Comercios cuya tarjeta ya creó este dispositivo (la sesión anónima también es por dispositivo).
+// Comercios cuya tarjeta ya vio este dispositivo (caché local). La lista de la cuenta vive en Firestore: users/{uid}/cards.
 const KEY = "my-card-slugs";
 
 export function getSavedSlugs(): string[] {
