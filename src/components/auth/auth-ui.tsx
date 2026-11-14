@@ -5,8 +5,8 @@ import { ArrowLeft, Eye, EyeOff, Loader2, type LucideIcon } from "lucide-react";
 
 /** Hoja redondeada sobre el fondo de color. Sirve para inicio, login, registro y recuperar contraseña. */
 export function AuthShell({
-  title, subtitle, backHref, onBack, children,
-}: { title: string; subtitle: string; backHref?: string; onBack?: () => void; children: ReactNode }) {
+  title, subtitle, logo, backHref, onBack, children,
+}: { title: string; subtitle: string; logo?: ReactNode; backHref?: string; onBack?: () => void; children: ReactNode }) {
   const backClass = "grid size-10 place-items-center rounded-full bg-white shadow-sm ring-1 ring-borde transition-transform active:scale-90";
   return (
     <main className="fondo-total min-h-dvh bg-fondo p-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:flex sm:items-center sm:justify-center sm:p-8">
@@ -20,7 +20,14 @@ export function AuthShell({
           <div className="h-10" />
         )}
         <header className="mt-4 text-center">
-          <h1 className="text-3xl font-extrabold text-texto sm:text-4xl">{title}</h1>
+          {logo ? (
+            <>
+              {logo}
+              <h1 className="sr-only">{title}</h1>
+            </>
+          ) : (
+            <h1 className="text-3xl font-extrabold text-texto sm:text-4xl">{title}</h1>
+          )}
           <p className="mx-auto mt-3 max-w-xs text-sm leading-relaxed text-texto-sec sm:max-w-sm sm:text-base">{subtitle}</p>
         </header>
         <div className="mt-8 flex flex-1 flex-col">{children}</div>

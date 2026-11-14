@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { BRAND } from "@/lib/brand";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({ variable: "--font-jakarta", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Loyalty app",
-  description: "App para fidelidad de clientes",
+  title: { default: BRAND.name, template: `%s · ${BRAND.name}` },
+  description: `${BRAND.tagline}. Tarjetas de fidelidad digitales para tu negocio.`,
 };
 
 export const viewport: Viewport = { themeColor: "#6f6866", viewportFit: "cover" };

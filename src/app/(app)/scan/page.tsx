@@ -7,6 +7,7 @@ import { StampScreen } from "@/components/stamp-screen";
 import { inputCls } from "@/components/shared/panel";
 import { useOwnerBusiness } from "@/lib/firebase/use-owner-business";
 import { parseScan } from "@/lib/scan";
+import { BRAND } from "@/lib/brand";
 
 export default function ScanPage() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function ScanPage() {
     if (status === "loading") return; // todavía no sabemos si es dueño o cliente
     const scan = parseScan(raw);
     if (!scan) {
-      setNotice("Ese código no es de Fidelidad App.");
+      setNotice(`Ese código no es de ${BRAND.name}.`);
       return;
     }
     // QR/link de un local: abre su tarjeta para sumarla

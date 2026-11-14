@@ -2,6 +2,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Gift, QrCode, Store, UserRound, Wallet, type LucideIcon } from "lucide-react";
+import { BRAND } from "@/lib/brand";
+import { BrandMark } from "./brand-logo";
 import { Sheet } from "./sheet";
 
 type Tab = { href: string; label: string; icon: LucideIcon };
@@ -48,8 +50,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <Sheet nav={nav}>
       <div className="mb-5 flex items-center gap-2.5">
-        <span className="grid size-9 place-items-center rounded-xl bg-boton text-white"><Wallet className="size-4" /></span>
-        <span className="text-xs font-extrabold tracking-widest text-texto">{business ? "FIDELIDAD NEGOCIOS" : "FIDELIDAD"}</span>
+        <BrandMark className="size-9 shrink-0" />
+        <span className="text-xs font-extrabold tracking-widest text-texto">{business ? `${BRAND.name} NEGOCIOS`.toUpperCase() : BRAND.name.toUpperCase()}</span>
       </div>
       {children}
     </Sheet>

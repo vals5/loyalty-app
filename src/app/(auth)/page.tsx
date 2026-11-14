@@ -2,13 +2,18 @@ import Link from "next/link";
 import { Store, User } from "lucide-react";
 import { AuthShell } from "@/components/auth/auth-ui";
 import { LoginForm } from "@/components/auth/login-form";
+import { BrandFull } from "@/components/shared/brand-logo";
+import { BRAND } from "@/lib/brand";
 
 const option =
   "flex min-h-28 flex-col items-center justify-center gap-1 rounded-2xl border border-borde bg-campo p-3 text-center shadow-sm transition-transform active:scale-[0.98]";
 
 export default function Home() {
   return (
-    <AuthShell title="Fidelidad App" subtitle="Ingresá a tu cuenta para ver tus tarjetas o gestionar tu negocio.">
+    <AuthShell
+      title={BRAND.name}
+      logo={<BrandFull className="mx-auto h-24 w-auto sm:h-28" />}
+      subtitle="Ingresá a tu cuenta para ver tus tarjetas o gestionar tu negocio.">
       <LoginForm />
 
       <section className="mt-auto pt-8" aria-labelledby="registro">

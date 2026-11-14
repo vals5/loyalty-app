@@ -6,37 +6,56 @@
   /* ── Paleta de la app: cambiá los colores SOLO acá y se actualiza todo ──
      Se usan como clases: bg-fondo, bg-boton, text-texto, text-texto-sec, border-borde…
      o como variable CSS: var(--color-boton) */
-  --color-fondo: #6f6866;      /* fondo de pantalla */
-  --color-boton: #131515;      /* botones principales */
-  --color-texto: #2b2c2b;      /* texto principal */
-  --color-texto-sec: #6f6866;  /* texto secundario */
-  --color-hoja: #f6f5f5;       /* hoja redondeada donde va el contenido */
-  --color-panel: #efebea;      /* paneles/tarjetas claras sobre la hoja */
-  --color-campo: #ffffff;      /* fondo de inputs */
-  --color-borde: #d9d5d3;      /* mini borde de inputs */
+  --color-fondo: #6f6866; /* fondo de pantalla */
+  --color-boton: #eb6209; /* botones principales */
+  --color-texto: #2b2c2b; /* texto principal */
+  --color-texto-sec: #6f6866; /* texto secundario */
+  --color-hoja: #f6f5f5; /* hoja redondeada donde va el contenido */
+  --color-panel: #efebea; /* paneles/tarjetas claras sobre la hoja */
+  --color-campo: #ffffff; /* fondo de inputs */
+  --color-borde: #d9d5d3; /* mini borde de inputs */
   --color-error: #b42318;
   --color-error-suave: #fef3f2;
   --color-exito: #166534;
   --color-exito-suave: #ecfdf3;
 
-
   --animate-pop: pop 380ms cubic-bezier(0.2, 1.4, 0.4, 1) both;
   --animate-scan: scan 2.4s ease-in-out infinite;
 
   @keyframes pop {
-    from { transform: scale(0.6); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
+    from {
+      transform: scale(0.6);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
   }
   @keyframes scan {
-    0%, 100% { top: 10%; }
-    50%      { top: 88%; }
+    0%,
+    100% {
+      top: 10%;
+    }
+    50% {
+      top: 88%;
+    }
   }
 }
 
-body { background: var(--color-fondo); color: var(--color-texto); }
-/* En inicio/ingreso/registro el fondo gris cubre toda la ventana, incluso al hacer scroll o sobre-scroll */
-body:has(.fondo-total) { background: var(--color-fondo); }
+body {
+  background: var(--color-fondo);
+  color: var(--color-texto);
+}
+body:has(.fondo-total) {
+  background: var(--color-fondo);
+}
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
