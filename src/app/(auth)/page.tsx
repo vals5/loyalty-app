@@ -12,8 +12,7 @@ export default function Home() {
   return (
     <AuthShell
       title={BRAND.name}
-      logo={<BrandFull className="mx-auto h-24 w-auto sm:h-28" />}
-      subtitle="Ingresá a tu cuenta para ver tus tarjetas o gestionar tu negocio.">
+      logo={<BrandFull className="mx-auto h-24 w-auto sm:h-28" />}>
       <LoginForm />
 
       <section className="mt-auto pt-8" aria-labelledby="registro">
